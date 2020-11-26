@@ -24,7 +24,7 @@ class Rectangle extends MovingObject {
 
 	draw() {
 		// Draw a simple rectangle
-		//this.context.fillStyle = this.isColliding ? "#ff8080" : "#0099b0"; //For Changing colour
+		this.context.fillStyle = this.isColliding ? "#FF5733" : "#57CA86"; //For Changing colour
 		this.context.fillRect(this.x, this.y, this.width, this.height);
 	}
 
@@ -128,6 +128,11 @@ InteractiveObjects.prototype = {
 					if (speed < 0) {
 						break;
 					}
+
+					obj1.vx -= speed * vCollisionNorm.x;
+					obj1.vy -= speed * vCollisionNorm.y;
+					obj2.vx += speed * vCollisionNorm.x;
+					obj2.vy += speed * vCollisionNorm.y;
 				}
 			}
 		}
