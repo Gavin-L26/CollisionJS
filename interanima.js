@@ -57,20 +57,20 @@ InteractiveObjects.prototype = {
 	//A loop that is reruns for every frame
 	frameLoop: function (timeStamp) {
 		// Calculate how much time has passed
-		var secondsPassed = (timeStamp - this.oldTimeStamp) / 1000;
+		let secondsPassed = (timeStamp - this.oldTimeStamp) / 1000;
 		this.oldTimeStamp = timeStamp;
 
 		// Loop over all game objects to update
-		for (var i = 0; i < this.movingObjects.length; i++) {
+		for (let i = 0; i < this.movingObjects.length; i++) {
 			this.movingObjects[i].update(secondsPassed);
 		}
 
 		this.detectCollisions();
 
-		this.clearCanvas();
+		this.CleanCanvas();
 
 		// Loop over all game objects to draw
-		for (var i = 0; i < this.movingObjects.length; i++) {
+		for (let i = 0; i < this.movingObjects.length; i++) {
 			this.movingObjects[i].draw();
 		}
 
@@ -81,20 +81,20 @@ InteractiveObjects.prototype = {
 
 	//Detect the collision between any two movingObjects in the canvas
 	detectCollisions: function () {
-		var obj1;
-		var obj2;
+		let obj1;
+		let obj2;
 
-		for (var i = 0; i < this.movingObjects.length; i++) {
+		for (let i = 0; i < this.movingObjects.length; i++) {
 			this.movingObjects[i].isColliding = false;
 		}
 
-		for (var i = 0; i < this.movingObjects.length; i++) {
+		for (let i = 0; i < this.movingObjects.length; i++) {
 			obj1 = this.movingObjects[i];
-			for (var j = i + 1; j < this.movingObjects.length; j++) {
+			for (let j = i + 1; j < this.movingObjects.length; j++) {
 				obj2 = this.movingObjects[j];
 
 				if (
-					this.rectIntersect(
+					this.overlapRect(
 						obj1.x,
 						obj1.y,
 						obj1.width,
@@ -108,20 +108,20 @@ InteractiveObjects.prototype = {
 					obj1.isColliding = true;
 					obj2.isColliding = true;
 
-					var vCollision = { x: obj2.x - obj1.x, y: obj2.y - obj1.y };
-					var distance = Math.sqrt(
+					let vCollision = { x: obj2.x - obj1.x, y: obj2.y - obj1.y };
+					let distance = Math.sqrt(
 						(obj2.x - obj1.x) * (obj2.x - obj1.x) +
 							(obj2.y - obj1.y) * (obj2.y - obj1.y)
 					);
-					var vCollisionNorm = {
+					let vCollisionNorm = {
 						x: vCollision.x / distance,
 						y: vCollision.y / distance,
 					};
-					var vRelativeVelocity = {
+					let vRelativeVelocity = {
 						x: obj1.vx - obj2.vx,
 						y: obj1.vy - obj2.vy,
 					};
-					var speed =
+					let speed =
 						vRelativeVelocity.x * vCollisionNorm.x +
 						vRelativeVelocity.y * vCollisionNorm.y;
 
@@ -138,8 +138,8 @@ InteractiveObjects.prototype = {
 		}
 	},
 
-	//Checks for overlapp
-	rectIntersect: function (x1, y1, w1, h1, x2, y2, w2, h2) {
+	//Checks for rectangel overlap
+	overlapRect: function (x1, y1, w1, h1, x2, y2, w2, h2) {
 		// Check x and y for overlap
 		if (x2 > w1 + x1 || x1 > w2 + x2 || y2 > h1 + y1 || y1 > h2 + y2) {
 			return false;
@@ -148,9 +148,8 @@ InteractiveObjects.prototype = {
 		return true;
 	},
 
-	//Clear the canvas for every frame to redraw
-	clearCanvas: function () {
-		// Clear the canvas
+	//Clean the canvas for every frame to redraw
+	CleanCanvas: function () {
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	},
 };
