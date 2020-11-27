@@ -89,27 +89,60 @@ InteractiveObjects.prototype = {
 
 	//A loop that is reruns for every frame
 	frameLoop: function (timeStamp) {
-		// Calculate how much time has passed
+		// Calculate time passed
 		let secondsPassed = (timeStamp - this.oldTimeStamp) / 1000;
 		this.oldTimeStamp = timeStamp;
 
-		// Loop over all game objects to update
+		// update all movingObjects
 		for (let i = 0; i < this.movingObjects.length; i++) {
 			this.movingObjects[i].update(secondsPassed);
 		}
 
+		// Check collisions
+		this.detectEdgeCollisions();
 		this.detectCollisions();
 
+		// Erase all drawings on canvas
 		this.CleanCanvas();
 
-		// Loop over all game objects to draw
+		// Redraw objects
 		for (let i = 0; i < this.movingObjects.length; i++) {
 			this.movingObjects[i].draw();
 		}
 
-		// The loop function has reached it's end
-		// Keep requesting new frames
 		window.requestAnimationFrame((timeStamp) => this.frameLoop(timeStamp));
+	},
+
+	//Detect whether an object has touched the edge of the canvas
+	detectEdgeCollisions: function () {
+		for (let i = 0; i < this.movingObjects.length; i++) {
+			this.movingObjects[i].isColliding = false;
+		}
+
+		for (let i = 0; i < this.movingObjects.length; i++) {
+			let obj = this.movingObjects[i];
+			let overlap;
+
+			//Check overlap
+			if (obj.shape == "rect") {
+				overlap = this.overlapRectEdge(obj.x, obj.y, obj.width, obj.height);
+			} else {
+				overlap = this.overlapCirEdge(obj.x, obj.y, obj.radius);
+			}
+
+			// change velocity
+			if (overlap != 0) {
+				obj.isColliding = true;
+
+				if (overlap == 1) {
+					obj.vx = -obj.vx;
+				}
+
+				if (overlap == 2) {
+					obj.vy = -obj.vy;
+				}
+			}
+		}
 	},
 
 	//Detect the collision between any two movingObjects in the canvas
@@ -206,6 +239,28 @@ InteractiveObjects.prototype = {
 				}
 			}
 		}
+	},
+
+	//Checks for a rectangle overlapping an edge of the canvas
+	overlapRectEdge: function (x, y, w, h) {
+		if (x <= 0 || x + w >= this.canvas.width) {
+			return 1;
+		}
+		if (y <= 0 || y + h >= this.canvas.height) {
+			return 2;
+		}
+		return 0;
+	},
+
+	//Checks for a circle overlapping an edge of the canvas
+	overlapCirEdge: function (x, y, r) {
+		if (x - r <= 0 || x + r >= this.canvas.width) {
+			return 1;
+		}
+		if (y - r <= 0 || y + r >= this.canvas.height) {
+			return 2;
+		}
+		return 0;
 	},
 
 	//Checks for two rectangles overlap
