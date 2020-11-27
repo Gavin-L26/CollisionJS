@@ -6,11 +6,11 @@ window.onload = function () {
 	let movingObjects = new InteractiveObjects(canvas, context);
 	movingObjects.addRect(250, 50, 50, 50, 50, 50);
 	movingObjects.addRect(250, 250, 0, -80, 20, 80);
-	movingObjects.addRect(150, 20, 30, 20, 40, 10);
 	movingObjects.addRect(250, 150, 40, 100, 60, 60);
-	movingObjects.addRect(350, 75, -70, 80, 30, 80);
-	movingObjects.addRect(320, 360, 60, -30, 20, 50);
-	movingObjects.addRect(200, 100, 0, 0, 40, 40);
+	movingObjects.addRect(320, 260, 0, 0, 30, 50);
 	movingObjects.addRect(260, 0, -30, 90, 70, 50);
 	movingObjects.addRect(80, 60, 50, -50, 50, 50);
+	movingObjects.addCir(450, 20, 30, 20, 10);
+	movingObjects.addCir(550, 75, -70, 80, 50);
+	movingObjects.addCir(700, 100, -30, 20, 40);
 };
