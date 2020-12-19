@@ -3,12 +3,17 @@
 
 // A movable object
 class MovingObject {
-	constructor(element, x, y, vx, vy) {
+	constructor(element, x, y, vx, vy, mass, gravity, g, color, coll_color) {
 		this.element = element;
 		this.x = x;
 		this.y = y;
 		this.vx = vx;
 		this.vy = vy;
+		this.mass = mass;
+		this.gravity = gravity;
+		this.g = g;
+		this.color = color;
+		this.coll_color = coll_color;
 
 		this.isColliding = false;
 	}
@@ -16,8 +21,21 @@ class MovingObject {
 
 // A rectangle shaped moving object
 class Rectangle extends MovingObject {
-	constructor(element, x, y, vx, vy, width, height) {
-		super(element, x, y, vx, vy);
+	constructor(
+		element,
+		x,
+		y,
+		vx,
+		vy,
+		width,
+		height,
+		mass,
+		gravity,
+		g,
+		color,
+		coll_color
+	) {
+		super(element, x, y, vx, vy, mass, gravity, g, color, coll_color);
 		this.width = width;
 		this.height = height;
 		this.shape = "rect";
@@ -26,12 +44,16 @@ class Rectangle extends MovingObject {
 	draw() {
 		// Draw a simple rectangle
 		this.element.style.backgroundColor = this.isColliding
-			? "#FF5733"
-			: "#57CA86"; //Change colour for better demostration
+			? this.coll_color
+			: this.color; //Change colour for better demostration
 	}
 
 	update(secondsPassed) {
 		// Update new position with the set velocity
+		if (this.gravity) {
+			this.vy += this.g * secondsPassed;
+		}
+
 		this.x += this.vx * secondsPassed;
 		this.y += this.vy * secondsPassed;
 
@@ -42,8 +64,20 @@ class Rectangle extends MovingObject {
 
 // A circle shaped moving object
 class Circle extends MovingObject {
-	constructor(element, x, y, vx, vy, radius) {
-		super(element, x, y, vx, vy);
+	constructor(
+		element,
+		x,
+		y,
+		vx,
+		vy,
+		radius,
+		mass,
+		gravity,
+		g,
+		color,
+		coll_color
+	) {
+		super(element, x, y, vx, vy, mass, gravity, g, color, coll_color);
 		this.radius = radius;
 		this.shape = "cir";
 	}
@@ -51,12 +85,16 @@ class Circle extends MovingObject {
 	draw() {
 		// Draw a simple circle
 		this.element.style.backgroundColor = this.isColliding
-			? "#FF5733"
-			: "#57CA86"; //Change colour for better demostration
+			? this.coll_color
+			: this.color; //Change colour for better demostration
 	}
 
 	update(secondsPassed) {
 		// Update new position with the set velocity
+		if (this.gravity) {
+			this.vy += this.g * secondsPassed;
+		}
+
 		this.x += this.vx * secondsPassed;
 		this.y += this.vy * secondsPassed;
 
@@ -66,7 +104,15 @@ class Circle extends MovingObject {
 }
 
 //Can be mapped to a canvas and control the movements of all movingobjects in it
-function InteractiveObjects(parentId) {
+function InteractiveObjects(
+	parentId,
+	resistance = 1.0,
+	gravity = false,
+	g = 490.5
+) {
+	this.gravity = gravity;
+	this.g = g;
+	this.resistance = resistance;
 	this.parentId = parentId;
 	this.oldTimeStamp = 0;
 	this.movingObjects = [];
@@ -74,10 +120,33 @@ function InteractiveObjects(parentId) {
 
 InteractiveObjects.prototype = {
 	//Add a new rectangle to the canvas at the given position with given dimension and given velocity
-	addRect: function (x, y, vx, vy, width, height) {
+	addRect: function (
+		x,
+		y,
+		vx,
+		vy,
+		width,
+		height,
+		mass = 1,
+		color = "#57CA86",
+		coll_color = "#FF5733"
+	) {
 		const rectElement = document.createElement("div");
 		rectElement.style = `position: absolute; left: ${x}px; top:${y}px; width: ${width}px; height: ${height}px; background-color: Aqua;`;
-		const rect = new Rectangle(rectElement, x, y, vx, vy, width, height);
+		const rect = new Rectangle(
+			rectElement,
+			x,
+			y,
+			vx,
+			vy,
+			width,
+			height,
+			mass,
+			this.gravity,
+			this.g,
+			color,
+			coll_color
+		);
 		this.movingObjects.push(rect);
 		const parent = $(this.parentId);
 		parent.append(rectElement);
@@ -87,12 +156,33 @@ InteractiveObjects.prototype = {
 		});
 	},
 
-	addCir: function (x, y, vx, vy, radius) {
+	addCir: function (
+		x,
+		y,
+		vx,
+		vy,
+		radius,
+		mass = 1,
+		color = "#57CA86",
+		coll_color = "#FF5733"
+	) {
 		const cirElement = document.createElement("div");
 		cirElement.style = `position: absolute; left: ${x}px; top:${y}px; width: ${
 			radius * 2
 		}px; height: ${radius * 2}px; border-radius: 50%; background-color: Aqua;`;
-		const cir = new Circle(cirElement, x, y, vx, vy, radius);
+		const cir = new Circle(
+			cirElement,
+			x,
+			y,
+			vx,
+			vy,
+			radius,
+			mass,
+			this.gravity,
+			this.g,
+			color,
+			coll_color
+		);
 		this.movingObjects.push(cir);
 		const parent = $(this.parentId);
 		parent.append(cirElement);
@@ -113,7 +203,18 @@ InteractiveObjects.prototype = {
 			this.movingObjects[i].update(secondsPassed);
 		}
 
-		// Check collisions
+		// let mx;
+		// let my;
+
+		// document.addEventListener("click", function (event) {
+		// 	mx = event.clientX;
+		// 	my = event.clientY;
+		// });
+
+		// // Check collisions
+		// if (mx != null && my != null) {
+		// 	this.detectMouseCollisions(mx, my);
+		// }
 		this.detectEdgeCollisions();
 		this.detectCollisions();
 
@@ -124,6 +225,11 @@ InteractiveObjects.prototype = {
 
 		window.requestAnimationFrame((timeStamp) => this.frameLoop(timeStamp));
 	},
+
+	// handleMousemove: function (event) {
+	// 	this.mouseX = event.clientX;
+	// 	this.mouseY = event.clientY;
+	// },
 
 	//Detect whether an object has touched the edge of the canvas
 	detectEdgeCollisions: function () {
@@ -147,43 +253,69 @@ InteractiveObjects.prototype = {
 				obj.isColliding = true;
 
 				if (overlap == 1) {
+					obj.x = 0.1;
 					const oldvx = obj.vx;
-					obj.vx = 0 - oldvx;
+					obj.vx = -(oldvx * this.resistance);
 				}
 
 				if (overlap == 2) {
+					if (obj.shape == "rect") {
+						obj.x = $(this.parentId).width() - obj.width - 0.1;
+					} else {
+						obj.x = $(this.parentId).width() - 2 * obj.radius - 0.1;
+					}
+					const oldvx = obj.vx;
+					obj.vx = -(oldvx * this.resistance);
+				}
+
+				if (overlap == 3) {
+					obj.y = 0.1;
 					const oldvy = obj.vy;
-					obj.vy = 0 - oldvy;
+					obj.vy = -(oldvy * this.resistance);
+				}
+
+				if (overlap == 4) {
+					if (obj.shape == "rect") {
+						obj.y = $(this.parentId).height() - obj.height - 0.1;
+					} else {
+						obj.y = $(this.parentId).height() - 2 * obj.radius - 0.1;
+					}
+					const oldvy = obj.vy;
+					obj.vy = -(oldvy * this.resistance);
 				}
 			}
 		}
 	},
 
 	// //Detect whether an object has touched the mouse
-	// detectMouseCollisions: function () {
+	// detectMouseCollisions: function (mx, my) {
+	// 	console.log(mx);
+	// 	console.log(my);
 	// 	for (let i = 0; i < this.movingObjects.length; i++) {
 	// 		this.movingObjects[i].isColliding = false;
 	// 	}
-
 	// 	for (let i = 0; i < this.movingObjects.length; i++) {
 	// 		let obj = this.movingObjects[i];
 	// 		let overlap;
-
 	// 		//Check overlap
 	// 		if (obj.shape == "rect") {
-	// 			overlap = this.overlapRectEdge(obj.x, obj.y, obj.width, obj.height);
+	// 			overlap = this.overlapRectM(
+	// 				obj.x,
+	// 				obj.y,
+	// 				obj.width,
+	// 				obj.height,
+	// 				mx,
+	// 				my
+	// 			);
 	// 		} else {
-	// 			overlap = this.overlapCirEdge(obj.x, obj.y, obj.radius);
+	// 			overlap = this.overlapCirM(obj.x, obj.y, obj.radius, mx, my);
 	// 		}
-
 	// 		// change velocity
 	// 		if (overlap != 0) {
 	// 			obj.isColliding = true;
-
 	// 			if (overlap == 1) {
 	// 				obj.vx = -obj.vx;
 	// 			}
-
 	// 			if (overlap == 2) {
 	// 				obj.vy = -obj.vy;
 	// 			}
@@ -278,41 +410,71 @@ InteractiveObjects.prototype = {
 						break;
 					}
 
-					obj1.vx -= speed * vCollisionNorm.x;
-					obj1.vy -= speed * vCollisionNorm.y;
-					obj2.vx += speed * vCollisionNorm.x;
-					obj2.vy += speed * vCollisionNorm.y;
+					let newSpeed = (2 * speed) / (obj1.mass + obj2.mass);
+
+					obj1.vx -= newSpeed * obj2.mass * vCollisionNorm.x;
+					obj1.vy -= newSpeed * obj2.mass * vCollisionNorm.y;
+					obj2.vx += newSpeed * obj1.mass * vCollisionNorm.x;
+					obj2.vy += newSpeed * obj1.mass * vCollisionNorm.y;
 				}
 			}
 		}
 	},
 
+	// overlapRectM: function (x, y, w, h, mx, my) {
+	// 	if (mx < x || mx > x + w || my < y || my > y + h) {
+	// 		return false;
+	// 	}
+	// 	return true;
+	// },
+
+	// overlapCirM: function (x, y, r, mx, my) {
+	// 	// distance between the two circles
+	// 	let d = Math.pow(x - mx, 2) + Math.pow(y - my, 2);
+
+	// 	// When the distance is smaller or equal to the sum
+	// 	// of the two radius, the circles overlap
+	// 	return d <= Math.pow(r, 2);
+	// },
+
 	//Checks for a rectangle overlapping an edge of the parent
 	overlapRectEdge: function (x, y, w, h) {
-		const position = $(this.parentId).position();
+		// const position = $(this.parentId).position();
 		const parentWidth = $(this.parentId).width();
 		const parentHeight = $(this.parentId).height();
 
-		if (x <= position.left || x + w >= position.left + parentWidth) {
+		if (x <= 0) {
 			return 1;
 		}
-		if (y <= position.top || y + h >= position.top + parentHeight) {
+		if (x + w >= parentWidth) {
 			return 2;
+		}
+		if (y <= 0) {
+			return 3;
+		}
+		if (y + h >= parentHeight) {
+			return 4;
 		}
 		return 0;
 	},
 
 	//Checks for a circle overlapping an edge of the canvas
 	overlapCirEdge: function (x, y, r) {
-		const position = $(this.parentId).position();
+		// const position = $(this.parentId).position();
 		const parentWidth = $(this.parentId).width();
 		const parentHeight = $(this.parentId).height();
 
-		if (x <= position.left || x + 2 * r >= position.left + parentWidth) {
+		if (x <= 0) {
 			return 1;
 		}
-		if (y <= position.top || y + 2 * r >= position.top + parentHeight) {
+		if (x + 2 * r >= parentWidth) {
 			return 2;
+		}
+		if (y <= 0) {
+			return 3;
+		}
+		if (y + 2 * r >= parentHeight) {
+			return 4;
 		}
 		return 0;
 	},
@@ -329,6 +491,10 @@ InteractiveObjects.prototype = {
 
 	//Checks for two circles overlap
 	overlapTwoCir: function (x1, y1, r1, x2, y2, r2) {
+		x1 = x1 + r1;
+		x2 = x2 + r2;
+		y1 = y1 + r1;
+		y2 = y2 + r2;
 		// distance between the two circles
 		let d = Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
 
