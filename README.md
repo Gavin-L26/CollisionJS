@@ -21,7 +21,7 @@ const example = new InteractiveObjects("#example");
 example.addRect(0, 0, 100, 100, 80, 80);
 ```
 
--HTML
+- HTML
 ```html
 <head>
     <meta charset="utf-8">
