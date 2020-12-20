@@ -1,8 +1,8 @@
 # CollisionJS
 
-# Landing Page
+## Landing Page
 https://safe-lowlands-15717.herokuapp.com/
 
-# Getting Started
+## Getting Started
 
-# Documentation
+## Documentation
