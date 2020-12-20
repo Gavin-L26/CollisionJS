@@ -1,11 +1,5 @@
 "use strict";
 
-// const example1 = $("#example1");
-// const x = example1.getBoundingClientRect().x;
-// const y = example1.getBoundingClientRect().y;
-// const width = example1.getBoundingClientRect().width;
-// const height = example1.getBoundingClientRect().height;
-
 const example1 = new InteractiveObjects("#example1");
 example1.addRect(0, 0, 100, 100, 80, 80);
 
