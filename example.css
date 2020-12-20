@@ -3,29 +3,49 @@
 body {
 	width: 100vw;
 	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
 	overflow: hidden;
 }
 
-.frontPage {
-	width: 100vw;
-	height: 100vh;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex-direction: column;
-	background: #f3f0f1;
-}
-
-.title {
-	line-height: 100px;
+.descriptions {
+	margin-top: 150px;
+	margin-left: 800px;
+	line-height: 20px;
 	font-family: "Montserrat", sans-serif;
-	font-size: 64px;
+	font-size: 20px;
 	font-weight: semibold;
 	position: relative;
+}
+
+.description {
+	margin-top: 5px;
+}
+
+.nextDescriptions {
+	margin-top: 300px;
+	margin-left: 800px;
+	margin-bottom: 150px;
+	line-height: 20px;
+	font-family: "Montserrat", sans-serif;
+	font-size: 20px;
+	font-weight: semibold;
+	position: relative;
+}
+
+.buttons {
+	position: absolute;
+	bottom: 20px;
+	width: 100vw;
+	display: flex;
+	flex-direction: row;
+	margin-top: 20px;
+}
+
+.prev {
+	margin-left: 10%;
+}
+
+.next {
+	margin-left: 48%;
 }
 
 .button {
